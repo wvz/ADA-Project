@@ -1,0 +1,28 @@
+Topic: Q&A from Stack Overflow  
+    https://www.kaggle.com/stackoverflow/rquestions
+    https://www.kaggle.com/datasets?sortBy=hottest&group=featured&search=stack
+Questions:
+    - What types of questions/answers are more popular (w.r.t. Scores) 
+      (How to ask/give valuable questions/answers)
+    - R & Python question difference (hotness, topics, disadvantages, ...)
+    - Question tag recommendation system
+    - Predict how long questions will take to answer
+
+    
+Task assignments:
+    - Everyone do EDA first
+        + R dataset: Wanyi Zhang, Jia Wang, Hanqing Shi
+        + Python dataset: Aoyuan Liao, Duanhong Gao,
+        + 10% dataset: Yutong Yang, Jingwei Li, Xiangyu Wu        
+    - Meet on Monday 12:00-2:30 pm to discuss further 
+
+
+
+
+
+
+
+
+
+
+
