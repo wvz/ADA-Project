@@ -1,2 +1,42 @@
-# ADA-Project
-STAT 5291 Advanced Data Analysis
+# Project: Q&A from Stack Overflow  
+    
+Term: Fall 2016
+    
++ Team #2
++ Team members
+	+ team member 1 Duanhong Gao
+	+ team member 2 Yi Jian
+	+ team member 3 Jingwei Li 
+	+ team member 4 Aoyuan Liao
+	+ team member 5 Hanqing Shi 
+	+ team member 6 Jia Wang
+	+ team member 7 Xiangyu Wu
+	+ team member 8 Yutong Yang 
+	+ team member 9 Wanyi Zhang
++ Project summary: In this project, we are going to explore questions below:
+    + What types of questions/answers are more popular (w.r.t. Scores)  
+      (How to ask/give valuable questions/answers)
+    + R & Python question difference (hotness, topics, disadvantages, ...)
+    + Question tag recommendation system
+    + Predict how long questions will take to answer
++ Data source:
+    https://www.kaggle.com/stackoverflow/rquestions
+    https://www.kaggle.com/datasets?sortBy=hottest&group=featured&search=stack
+    https://www.kaggle.com/stackoverflow/stacksample
+    
+    
+**Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
+
+Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
+
+```
+proj/
+├── data/
+├── doc/
+├── figs/
+├── lib/
+├── meetings/
+└── output/
+```
+
+Please see each subfolder for a README file.
