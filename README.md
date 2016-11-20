@@ -13,17 +13,16 @@ Term: Fall 2016
 	+ team member 7 Xiangyu Wu
 	+ team member 8 Yutong Yang 
 	+ team member 9 Wanyi Zhang
-+ Project summary: In this project, we are going to explore questions below:
-    + What types of questions/answers are more popular (w.r.t. Scores)  
-      (How to ask/give valuable questions/answers)
-    + R & Python question difference (hotness, topics, disadvantages, ...)
-    + Question tag recommendation system
-    + Predict how long questions will take to answer
-+ Data source:
-    https://www.kaggle.com/stackoverflow/rquestions
-    https://www.kaggle.com/datasets?sortBy=hottest&group=featured&search=stack
-    https://www.kaggle.com/stackoverflow/stacksample
-    
++ Project summary: In this project, we are going to answer questions below  
+    + What types of questions/answers are more popular (w.r.t. Scores) (How to ask/give valuable questions/answers) 
+    + R & Python question difference (hotness, topics, disadvantages, ...)  
+    + Question tag recommendation system    
+    + Predict how long questions will take to answer    
++ Data source:  
+    + R questions: https://www.kaggle.com/stackoverflow/rquestions  
+    + Python questions: https://www.kaggle.com/datasets?sortBy=hottest&group=featured&search=stack      
+    + 10% questions on programming topics: https://www.kaggle.com/stackoverflow/stacksample    
+        + Each dataset is organized as three tables: Questions.csv, Answers.csv, and Tags.csv   
     
 **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
