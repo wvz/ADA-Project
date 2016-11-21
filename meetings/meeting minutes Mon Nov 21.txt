@@ -1,0 +1,30 @@
+Tasks:
+    1. What types of questions/answers are more popular (w.r.t. Scores) 
+        (How to ask/give valuable questions/answers)
+       Predict how long it will take questions to answer (w.r.t. CreationDate)
+	- w.r.t. IsAcceptedAnswer
+	- whether code/link/graph exist in answers
+	- regression
+
+    2. R & Python question difference (hotness, topics, disadvantages, ...)
+
+    3. Question tag recommendation system
+	- topic modeling
+
+    
+Task assignments:
+	1. Aoyuan Liao, Hanqing Shi, Yi Jian
+	2. Duanhong Gao, Jia Wang, Xiangyu Wu
+	3. Wanyi Zhang, Jingwei Li, Yutong Yang
+
+
+
+
+
+
+
+
+
+
+
+
