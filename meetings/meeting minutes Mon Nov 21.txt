@@ -15,10 +15,12 @@ Tasks:
 Task assignments:
 	1. Aoyuan Liao, Hanqing Shi, Yi Jian
 	2. Duanhong Gao, Jia Wang, Xiangyu Wu
-	3. Wanyi Zhang, Jingwei Li, Yutong Yang
+	3. Jingwei Li, Wanyi Zhang, Yutong Yang
 
 
-
+Next meeting:
+	9:00-11:00PM Tue, Nov 29 @ NWC Rm606
+	prepensation using markdown
 
 
 
