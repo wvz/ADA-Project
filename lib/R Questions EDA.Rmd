@@ -10,9 +10,12 @@ output: html_notebook
 R.Q = read.csv("~/Google Drive/Columbia/5291 ADA/1202 Project/rquestions/Questions.csv")
 R.A = read.csv("~/Google Drive/Columbia/5291 ADA/1202 Project/rquestions/Answers.csv")
 R.Tags = read.csv("~/Google Drive/Columbia/5291 ADA/1202 Project/rquestions/Tags.csv")
-save(R.Q, R.A, R.Tags, file = "~/Google Drive/Columbia/5291 ADA/1202 Project/Workspace.RData")
+R.Q$CreationDate = as.Date(R.Q$CreationDate)
+R.A$CreationDate = as.Date(R.A$CreationDate)
 
-load("~/Google Drive/Columbia/5291 ADA/1202 Project/Workspace.RData")
+save(R.Q, R.A, R.Tags, file = "~/Google Drive/Columbia/5291 ADA/1202 Project/R-Dataset.RData")
+
+load("~/Google Drive/Columbia/5291 ADA/1202 Project/R-Dataset.RData")
 head(R.Q)
 dim(R.Q); dim(R.A); dim(R.Tags)
 names(R.Q); names(R.A); names(R.Tags)
@@ -110,7 +113,6 @@ This is so interesting as compared to OwnerUserId analysis in Questions. The top
 ##CreationDate
 + Questions
 ```{r}
-R.Q$CreationDate = as.Date(R.Q$CreationDate)
 range(R.Q$CreationDate) # from 2008-09-16 to 2016-10-19
 RQ.date = as.data.frame(table(R.Q$CreationDate))
 plot(RQ.date); lines(lowess(RA.date), col = 2)
@@ -126,7 +128,6 @@ sort(temp, decreasing = T)[1:10]
 
 + Answers
 ```{r}
-R.A$CreationDate = as.Date(R.A$CreationDate)
 range(R.A$CreationDate) # from "2008-09-17" to "2016-10-19"
 RA.date = as.data.frame(table(R.A$CreationDate))
 plot(RA.date); lines(lowess(RA.date), col = 2)
@@ -148,7 +149,9 @@ sort(by(R.A$Id, R.A$ParentId, length), decreasing = T)[1:10]
 #      24      22      21      21      17      16      16      15      15      14 
 
 # Average number of answers per question
-mean(by(R.A$Id, R.A$ParentId, length)) # 1.59
+summary(by(R.A$Id, R.A$ParentId, length))
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  1.000   1.000   1.000   1.592   2.000  24.000 
 
 ```
 
@@ -158,7 +161,7 @@ Notes from ADS:
 vector representation of key words, word2vec function/package
 recommend using NLP tools to capture song and predict intermediate variables
 deep learning, reduce dimensionality
-text processing package: tidy_text_r package
+text processing package: tidytext package
 
 
 
