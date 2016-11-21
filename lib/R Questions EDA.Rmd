@@ -1,0 +1,171 @@
+---
+title: "R Questions EDA"
+author: "Wanyi Zhang"
+date: "Nov 20, 2016"
+output: html_notebook
+---
+  
+## Read 3 csv files 
+```{r}
+R.Q = read.csv("~/Google Drive/Columbia/5291 ADA/1202 Project/rquestions/Questions.csv")
+R.A = read.csv("~/Google Drive/Columbia/5291 ADA/1202 Project/rquestions/Answers.csv")
+R.Tags = read.csv("~/Google Drive/Columbia/5291 ADA/1202 Project/rquestions/Tags.csv")
+save(R.Q, R.A, R.Tags, file = "~/Google Drive/Columbia/5291 ADA/1202 Project/Workspace.RData")
+
+load("~/Google Drive/Columbia/5291 ADA/1202 Project/Workspace.RData")
+head(R.Q)
+dim(R.Q); dim(R.A); dim(R.Tags)
+names(R.Q); names(R.A); names(R.Tags)
+```
+R.Q has 147075 observations and 6 variables: "Id", "OwnerUserId", "CreationDate", "Score", "Title", "Body".
+R.A has 198592 observations and 7 variables: "Id", "OwnerUserId", "CreationDate"     "ParentId", "Score", "IsAcceptedAnswer", "Body". The ParentId column links back to the Questions table.
+R.Tags has 241546 observations and 2 variables: "Id", "Tag"
+    
+## Score 
+  + Questions
+```{r}
+summary(R.Q$Score)
+#     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+#  -14.000    0.000    1.000    1.932    2.000 1550.000 
+boxplot(R.Q$Score)
+
+# let's see which unicorn question has the highest score 1550
+which.max(R.Q$Score) # 4243rd observation
+R.Q[which.max(R.Q$Score), ]
+# Title: How to make a great R reproducible example?
+# Body: <p>When discussing performance with colleagues, teaching, sending a bug report or searching for guidance on mailing lists and here on SO, a <a href="http://stackoverflow.com/help/mcve">reproducible example</a> is often asked and always helpful.</p>\n\n<p>What are your tips for creating an excellent example?  How do you paste data structures from <a href="/questions/tagged/r" class="post-tag" title="show questions tagged &#39;r&#39;" rel="tag">r</a> in a text format?  What other information should you include?</p>\n\n<p>Are there other tricks in addition to using <code>dput()</code>, <code>dump()</code> or <code>structure()</code>?  When should you include <code>library()</code> or <code>require()</code> statements?  Which reserved words should one avoid, in addition to <code>c</code>, <code>df</code>, <code>data</code>, etc?</p>\n\n<p>How does one make a great <a href="/questions/tagged/r" class="post-tag" title="show questions tagged &#39;r&#39;" rel="tag">r</a> reproducible example?... <truncated>
+# URL: http://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example
+
+hist(R.Q$Score[-4243]) # excluded the outlier with highest score
+quantile(R.Q$Score, c(0.9, 0.95, 0.98, 0.99, 0.995, 1))
+#  90%  95%  98%  99%  99.5%  100% 
+#    4    7   13   21     32  1550 
+library(dplyr)
+RQ.trim = R.Q %>% filter(Score < 21) # 99% of data
+hist(RQ.trim$Score, breaks = seq(-14.5, 20.5, 1)) # score 0 has the highset freq
+length(which(R.Q$Score < 0)); length(which(R.Q$Score == 0)); length(which(R.Q$Score > 0)) # 7508, 56444, 83123
+```
+  
++ Answers 
+```{r}
+summary(R.A$Score)
+#     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+#   -8.000    1.000    1.000    2.833    3.000 1058.000 
+boxplot(R.A$Score)
+
+# Let's see which unicorn answer has the highest score 1058
+which.max(R.A$Score) # the 279th observation
+R.A[279, ]
+# Let's see what question it links to
+R.Q[R.Q$Id==1296646,] 
+# Question: How to sort a dataframe by column(s)?
+# Body: <p>You can use the <a href="http://stat.ethz.ch/R-manual/R-devel/library/base/html/order.html"><code>order()</code></a> function directly without resorting to add-on tools -- see this simpler answer which uses a trick right from the top of the <code>example(order)</code> code:</p>\n\n<pre><code>R&gt; dd[with(dd, order(-z, b)), ]\n    b x y z\n4 Low C 9 2\n2 Med D 3 1\n1  Hi A 8 1\n3  Hi A 9 1\n</code></pre>\n\n<p><em>Edit some 2+ years later:</em>  It was just asked how to do this by column index. The answer is to simply pass the desired sorting column(s) to the <code>order()</code> function:</p>\n\n<pre><code>R&gt; dd[ order(-dd[,4], dd[,1]), ]\n    b x y z\n4 Low C 9 2\n2 Med D 3 1\n1  Hi A 8 1\n3  Hi A 9 1\nR&gt; \n</code></pre>\n\n<p>rather than using the name of the column (and <code>with()</code> for easier/more direct access).</p>\n
+# URL: http://stackoverflow.com/questions/1296646/how-to-sort-a-dataframe-by-columns
+
+hist(R.A$Score[-279]) # excluded the outlier with highest score
+quantile(R.A$Score, c(0.9, 0.95, 0.98, 0.99, 0.995, 1))
+#  90%   95%   98%   99% 99.5%  100%
+#    6     9    16    24    38  1058  
+
+RA.trim = R.A %>% filter(Score < 24) # 99% of data
+hist(RA.trim$Score, breaks = seq(-8.5, 24.5, 1)) # score 0 has the highset freq
+length(which(R.A$Score < 0)); length(which(R.A$Score == 0)); length(which(R.A$Score > 0)) # 1436, 48138, 149018
+```
+
+
+## OwnerUserId
++ Questions
+```{r}
+length(unique(R.Q$OwnerUserId)) # 46069 question owners
+# Who asked questions with averagely highest score?
+AskerScore.Mean = by(R.Q$Score, as.factor(R.Q$OwnerUserId), mean)
+sort(AskerScore.Mean, decreasing = T)[1:10]
+# 143305 2153893  233979  162436  425477  256439   14008  350373  274686  787038 
+#  354.0   250.0   208.0   177.5   161.0   156.0   134.0   131.0   116.0   111.0 
+
+# The top 10 most frequent asker ID and the number of questions
+sort(by(R.Q$Score, as.factor(R.Q$OwnerUserId), length), decreasing = T)[1:10]
+# 1000343 1471980  707145 3022875  914308  170352 1199712 3522130 1130279  714319 
+#     357     273     219     208     195     176     161     159     154     151 
+
+```
+
++ Answers
+```{r}
+length(unique(R.A$OwnerUserId)) # 23080 answer owners
+# Who answered with averagely highest score?
+AnswererScore.Mean = by(R.A$Score, as.factor(R.A$OwnerUserId), mean)
+sort(AnswererScore.Mean, decreasing = T)[1:10]
+# 2295352  238699 2371441 1713077  185475 2391643   19241   41665 1054215 1055339
+#     283     218     190     177     141     129     127     116     105      99  
+
+# The top 10 most frequent answerer ID and the number of answers
+sort(by(R.A$Score, as.factor(R.A$OwnerUserId), length), decreasing = T)[1:10]
+# 3732271 1855677 1270695 2372064  143305 1838509  516548 1412059  190277 3063910 
+#    7699    4982    2634    2309    2244    2156    2003    1885    1813    1585 
+```
+This is so interesting as compared to OwnerUserId analysis in Questions. The top 10 average scores of answerers are smaller than those of askers, while the numbers of answers of the top 10 most frequent answerers are much more than those of the top 10 most frequent askers. 
+
+
+##CreationDate
++ Questions
+```{r}
+R.Q$CreationDate = as.Date(R.Q$CreationDate)
+range(R.Q$CreationDate) # from 2008-09-16 to 2016-10-19
+RQ.date = as.data.frame(table(R.Q$CreationDate))
+plot(RQ.date); lines(lowess(RA.date), col = 2)
+
+# Top 10 dates of highest average daily score
+temp = by(R.Q$Score, R.Q$CreationDate, mean)
+sort(temp, decreasing = T)[1:10] 
+# 2009-08-18 2009-11-13 2009-09-24 2009-12-17 2009-07-28 2009-08-08 2008-09-16 
+#   790.0000   348.0000   225.0000   208.0000   157.5000   144.0000   134.0000 
+# 2009-08-31 2009-08-19 2011-05-11 
+#   131.3333   125.6000   113.7333 
+```
+
++ Answers
+```{r}
+R.A$CreationDate = as.Date(R.A$CreationDate)
+range(R.A$CreationDate) # from "2008-09-17" to "2016-10-19"
+RA.date = as.data.frame(table(R.A$CreationDate))
+plot(RA.date); lines(lowess(RA.date), col = 2)
+
+# Top 10 dates of highest average daily score
+temp = by(R.A$Score, R.A$CreationDate, mean)
+sort(temp, decreasing = T)[1:10] # Top 10 highest average daily score
+# 2009-08-18 2009-03-16 2009-06-09 2009-11-13 2009-03-24 2011-08-21 2009-11-16 
+#  549.50000  116.00000  101.00000   93.00000   89.00000   88.72727   85.20000 
+# 2009-04-13 2009-07-20 2009-12-17 
+#   77.00000   75.00000   74.00000  
+```
+
+## Id & ParentId
+```{r}
+# Top 10 questions with highest number of answers 
+sort(by(R.A$Id, R.A$ParentId, length), decreasing = T)[1:10]
+# 2547402 4090169 1358003 5963269 1815606 4605206 9341635 1296646 3365657 2436688 
+#      24      22      21      21      17      16      16      15      15      14 
+
+# Average number of answers per question
+mean(by(R.A$Id, R.A$ParentId, length)) # 1.59
+
+```
+
+## Title and Body   
+Now we see how cumbersome the body text is, with all those levels attached. 
+Notes from ADS:
+vector representation of key words, word2vec function/package
+recommend using NLP tools to capture song and predict intermediate variables
+deep learning, reduce dimensionality
+text processing package: tidy_text_r package
+
+
+
+
+## Tags
+```{r}
+head(R.Tags)
+length(unique(R.Tags$Tag)) # 5962 tags
+```
+
