@@ -14,9 +14,9 @@ Term: Fall 2016
 	+ team member 8 Yutong Yang 
 	+ team member 9 Wanyi Zhang
 + Project summary: In this project, we are going to answer questions below  
-    + What types of questions/answers are more popular (w.r.t. Scores) (How to ask/give valuable questions/answers) 
-    + R & Python question difference (hotness, topics, disadvantages, ...)  
-    + Question tag recommendation system    
+    + What types of questions/answers are more popular (w.r.t. Scores) (How to ask/give valuable questions/answers)(Aoyuan Liao; Hanqing Shi; Yi Jian) 
+    + R & Python question difference (hotness, topics, disadvantages, ...)(Duanhong Gao; Jia Wang; Xiangyu Wu)
+    + Question tag recommendation system (Jingwei Li; Wanyi Zhang; Yutong Yang)    
     + Predict how long questions will take to answer    
 + Data source:  
     + R questions: https://www.kaggle.com/stackoverflow/rquestions  
