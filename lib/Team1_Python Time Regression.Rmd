@@ -1,0 +1,94 @@
+---
+title: "Python time regression"
+author: "HanqingShi"
+date: "2016-11-24"
+output: pdf_document
+---
+
+```{r}
+### Python Part
+# read 3 files
+PA <- read.csv(file = "Python_Answers_clean.csv", header = T, sep = "\t", nrows = 100)
+classPA <- sapply(PA, class)
+PA <- read.csv(file = "Python_Answers_clean.csv", header = T, sep = "\t", colClasses = classPA)
+PQ <- read.csv(file = "Python_Questions_clean.csv", header = T, sep = "\t", nrows = 100)
+classPQ <- sapply(PQ, class)
+PQ <- read.csv(file = "Python_Questions_clean.csv", header = T, sep = "\t", colClasses = classPQ)
+PA$CreationDate = as.POSIXct(PA$CreationDate, format="%Y-%m-%dT%H:%M:%SZ", tz="GMT")
+PQ$CreationDate = as.POSIXct(PQ$CreationDate, format="%Y-%m-%dT%H:%M:%SZ", tz="GMT")
+names(PA)[2] = "Id.y"
+PQA <- merge(x=PQ, y=PA, by.x="Id", by.y="ParentId", all.x=T)
+```
+
+```{r}
+# Answer Score EDA
+PAscore <- PA[,"Score"]
+rm(PA);
+summary(PAscore);
+#    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+# -38.000    0.000    1.000    3.028    3.000 8384.000 
+boxplot(PAscore, cex=.5)
+plot(PAscore, type = "l")
+rm(PAscore);
+# choose the good answer threshold = 3, the 3rd quantile
+threshold <- 3;
+```
+
+```{r}
+# calculate time until a good answer: Time
+library(dplyr)
+nQ <- dim(PQ)[1] # nQ=607282
+Time <- rep(NA, nQ)
+for(n in 1:nQ){
+  aa <- PQA %>% filter(Id==PQ$Id[n])
+  K <- dim(aa)[1]
+  aa <- arrange(aa, CreationDate.y)
+  for(k in 1:K){
+    if(is.na(aa$Score.y[k])==F & aa$Score.y[k]>=threshold){
+      Time[n]=aa$CreationDate.y[k]-aa$CreationDate.x[k]
+      break
+    }
+  }
+}
+rm(PQA);rm(PQ);
+foo <- max(Time, na.rm = T); #foo=2211.759
+Time[is.na(Time)] = foo;
+```
+
+```{r}
+# Extract Python regression data
+PQF <- read.csv(file = "python_questions_features.csv.txt", header = T, nrows = 100)
+classPQF <- sapply(PQF, class)
+PQF <- read.csv(file = "python_questions_features.csv.txt", header = T, colClasses = classPQF)
+PRegData <- cbind(Time, PQF[,c(5,7:12)]) 
+rm(Time);rm(PQF);
+save(PRegData,  file = "PythonRegressionDataset.RData")
+load("PythonRegressionDataset.RData")
+```
+
+```{r}
+fitPtime <- lm(Time ~ Score + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length, data = PRegData)
+summary(fitPtime)
+# Residuals:
+#    Min     1Q Median     3Q    Max 
+#  -4003  -1452    603    678  36601 
+
+# Coefficients:
+#                       Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)          1.530e+03  1.890e+00  809.61   <2e-16 ***
+# Score               -6.917e+00  6.535e-02 -105.86   <2e-16 ***
+# code_blocks_count   -9.114e+00  4.311e-01  -21.14   <2e-16 ***
+# code_comments_count  5.891e+01  2.396e+00   24.58   <2e-16 ***
+# url_count            7.268e+01  3.287e+00   22.11   <2e-16 ***
+# img_count            5.617e+01  4.167e+00   13.48   <2e-16 ***
+# code_length          8.693e-02  1.492e-03   58.27   <2e-16 ***
+# comments_length     -3.025e-02  2.542e-03  -11.90   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+# Residual standard error: 981.7 on 607274 degrees of freedom
+# Multiple R-squared:  0.0306,	Adjusted R-squared:  0.03059 
+# F-statistic:  2738 on 7 and 607274 DF,  p-value: < 2.2e-16
+
+```
+
