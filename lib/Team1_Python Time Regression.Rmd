@@ -35,7 +35,7 @@ threshold <- 3;
 ```
 
 ```{r}
-# calculate time until a good answer: Time
+# calculate time until a good answer: Time(hours)
 library(dplyr)
 nQ <- dim(PQ)[1] # nQ=607282
 Time <- rep(NA, nQ)
@@ -67,28 +67,177 @@ load("PythonRegressionDataset.RData")
 ```
 
 ```{r}
-fitPtime <- lm(Time ~ Score + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length, data = PRegData)
-summary(fitPtime)
-# Residuals:
-#    Min     1Q Median     3Q    Max 
-#  -4003  -1452    603    678  36601 
+attach(PRegData)
+summary(Time) # there are situations that answers came bebore quesions
+#     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+# -1219.00    26.58  2212.00  1572.00  2212.00  2212.00 
+length(which(Time==0))
+# [1] 429
+length(which(Time==max(Time)))
+# [1] 430177
+boxplot(Time)
+hist(Time, breaks=1000)
+hist(Time, xlim = c(-100,200), ylim = c(0,100000), breaks=1000)
+
+# delete negtive time rows, generate time label
+PRegDataPosi <- PRegData[-which(Time<0),]
+TimePosi <- Time[-which(Time<0)]
+N <- dim(PRegDataPosi)[1] # N=607276
+Label <- rep(1, N)
+Label[TimePosi==max(TimePosi)] = 0
+PRegPosiG <- PRegDataPosi[which(Label==1),]
+PRegPosiBi <- cbind(PRegDataPosi, Label)
+save(PRegPosiBi,  file = "PythonRegressionPositiveBinary.RData")
+load("PythonRegressionPositiveBinary.RData")
+
+# logistic regression on Label=1 get good answers and Label=0 no good answer
+fitPBi <- glm(Label ~ Score + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length, family = "binomial", data = PRegPosiBi)
+summary(fitPBi)
+# Call:
+# glm(formula = Label ~ Score + code_blocks_count + code_comments_count + 
+#     url_count + img_count + code_length + comments_length, family = "binomial", 
+#     data = PRegPosiBi)
+
+# Deviance Residuals: 
+#     Min       1Q   Median       3Q      Max  
+# -8.4904  -0.6725  -0.5629   0.3045   7.3352  
 
 # Coefficients:
-#                       Estimate Std. Error t value Pr(>|t|)    
-# (Intercept)          1.530e+03  1.890e+00  809.61   <2e-16 ***
-# Score               -6.917e+00  6.535e-02 -105.86   <2e-16 ***
-# code_blocks_count   -9.114e+00  4.311e-01  -21.14   <2e-16 ***
-# code_comments_count  5.891e+01  2.396e+00   24.58   <2e-16 ***
-# url_count            7.268e+01  3.287e+00   22.11   <2e-16 ***
-# img_count            5.617e+01  4.167e+00   13.48   <2e-16 ***
-# code_length          8.693e-02  1.492e-03   58.27   <2e-16 ***
-# comments_length     -3.025e-02  2.542e-03  -11.90   <2e-16 ***
+#                       Estimate Std. Error  z value Pr(>|z|)    
+# (Intercept)         -1.504e+00  5.551e-03 -270.861  < 2e-16 ***
+# Score                5.757e-01  2.105e-03  273.438  < 2e-16 ***
+# code_blocks_count    4.709e-03  1.156e-03    4.073 4.63e-05 ***
+# code_comments_count -1.042e-01  7.015e-03  -14.851  < 2e-16 ***
+# url_count           -4.435e-01  9.148e-03  -48.476  < 2e-16 ***
+# img_count           -2.297e-01  1.276e-02  -18.009  < 2e-16 ***
+# code_length         -2.960e-04  6.323e-06  -46.821  < 2e-16 ***
+# comments_length      9.416e-05  1.093e-05    8.611  < 2e-16 ***
 # ---
 # Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-# Residual standard error: 981.7 on 607274 degrees of freedom
-# Multiple R-squared:  0.0306,	Adjusted R-squared:  0.03059 
-# F-statistic:  2738 on 7 and 607274 DF,  p-value: < 2.2e-16
+# (Dispersion parameter for binomial family taken to be 1)
+
+#     Null deviance: 733108  on 607275  degrees of freedom
+# Residual deviance: 568358  on 607268  degrees of freedom
+# AIC: 568374
+
+# Number of Fisher Scoring iterations: 8
+
+
+# regression only Label=1 time on x
+fitPtimeG <- lm(Time ~ Score + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length, data = PRegPosiG)
+summary(fitPtimeG)
+# Call:
+# lm(formula = Time ~ Score + code_blocks_count + code_comments_count + 
+#     url_count + img_count + code_length + comments_length, data = PRegPosiG)
+
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+#  -79.62  -15.84  -12.46   -3.64 1985.83 
+
+# Coefficients:
+#                       Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)         18.7645445  0.2456984  76.372  < 2e-16 ***
+# Score               -0.0018126  0.0047183  -0.384 0.700858    
+# code_blocks_count   -0.3921172  0.0578123  -6.783 1.18e-11 ***
+# code_comments_count -0.4892947  0.3343897  -1.463 0.143402    
+# url_count            8.2388908  0.4508019  18.276  < 2e-16 ***
+# img_count           -0.8025912  0.6072136  -1.322 0.186249    
+# code_length          0.0021367  0.0002502   8.542  < 2e-16 ***
+# comments_length     -0.0015303  0.0004479  -3.416 0.000635 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+# Residual standard error: 69.89 on 177091 degrees of freedom
+# Multiple R-squared:  0.002484,	Adjusted R-squared:  0.002444 
+# F-statistic: 62.99 on 7 and 177091 DF,  p-value: < 2.2e-16
+step( lm(Time ~ Score + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length, data = PRegPosiG), direction = "backward" )
+# Call:
+# lm(formula = Time ~ code_blocks_count + code_comments_count + 
+#     url_count + code_length + comments_length, data = PRegPosiG)
+# Coefficients:
+#         (Intercept)    code_blocks_count  code_comments_count  
+#           18.736450            -0.391280            -0.495583  
+#           url_count          code_length      comments_length  
+#            8.167501             0.002132            -0.001538  
+step( lm(Time ~ 1, data = PRegPosiG), scope = ~ Score + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length, direction = "forward" )
+# Call:
+# lm(formula = Time ~ url_count + code_length + code_blocks_count + 
+#     comments_length + code_comments_count, data = PRegPosiG)
+# Coefficients:
+#         (Intercept)            url_count          code_length  
+#           18.736450             8.167501             0.002132  
+#   code_blocks_count      comments_length  code_comments_count  
+#           -0.391280            -0.001538            -0.495583  
+fitPFinal <- lm(Time ~ code_blocks_count + code_comments_count + url_count + code_length + comments_length, data = PRegPosiG)
+summary(fitPFinal)
+# Call:
+# lm(formula = Time ~ code_blocks_count + code_comments_count + 
+#     url_count + code_length + comments_length, data = PRegPosiG)
+
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+#  -79.41  -15.84  -12.45   -3.64 1985.87 
+
+# Coefficients:
+#                       Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)         18.7364499  0.2433422  76.996  < 2e-16 ***
+# code_blocks_count   -0.3912803  0.0578090  -6.769 1.31e-11 ***
+# code_comments_count -0.4955830  0.3343271  -1.482 0.138254    
+# url_count            8.1675009  0.4477847  18.240  < 2e-16 ***
+# code_length          0.0021323  0.0002501   8.527  < 2e-16 ***
+# comments_length     -0.0015385  0.0004479  -3.435 0.000593 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+# Residual standard error: 69.89 on 177093 degrees of freedom
+# Multiple R-squared:  0.002473,	Adjusted R-squared:  0.002445 
+# F-statistic:  87.8 on 5 and 177093 DF,  p-value: < 2.2e-16
+
+
+# regression all positive time on x
+fitPtime <- lm(Time ~ Score + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length, data = PRegDataPosi)
+summary(fitPtime)
+# Call:
+# lm(formula = Time ~ Score + code_blocks_count + code_comments_count + 
+#     url_count + img_count + code_length + comments_length, data = PRegDataPosi)
+
+# Residuals:
+#    Min     1Q Median     3Q    Max 
+#  -4002  -1452    603    678  36745 
+
+# Coefficients:
+#                       Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)          1.530e+03  1.890e+00  809.66   <2e-16 ***
+# Score               -6.943e+00  6.551e-02 -106.00   <2e-16 ***
+# code_blocks_count   -9.109e+00  4.311e-01  -21.13   <2e-16 ***
+# code_comments_count  5.890e+01  2.396e+00   24.58   <2e-16 ***
+# url_count            7.269e+01  3.287e+00   22.11   <2e-16 ***
+# img_count            5.616e+01  4.167e+00   13.48   <2e-16 ***
+# code_length          8.692e-02  1.492e-03   58.26   <2e-16 ***
+# comments_length     -3.024e-02  2.542e-03  -11.90   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+# Residual standard error: 981.7 on 607268 degrees of freedom
+# Multiple R-squared:  0.03064,	Adjusted R-squared:  0.03063 
+# F-statistic:  2742 on 7 and 607268 DF,  p-value: < 2.2e-16
+
+
+# split data into train(80%) and test(20%), do logistic regression, calculate prediction accuracy
+N; N * 0.2;
+# [1] 607276
+# [1] 121455.2
+set.seed(5291)
+testindex <- sample.int(n=607276, size=121455)
+fitPtrain <- glm(Label ~ Score + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length, family = "binomial", data = PRegPosiBi[-testindex,])
+summary(fitPtrain)
+prelabel <- predict.glm(fitPtrain, PRegPosiBi[testindex,], type = "response")
+prelabel[prelabel<0.5]=0
+prelabel[prelabel>=0.5]=1
+preaccuracy <- length( which(prelabel == PRegPosiBi$Label[testindex]) ) / 121455
+preaccuracy
+# [1] 0.8006422
 
 ```
 
