@@ -1,0 +1,146 @@
+---
+title: "Untitled"
+author: 'Jia Wang (UNI: jw3315)'
+date: "November 26, 2016"
+output: pdf_document
+---
+
+```{r}
+library(tidytext)
+library(dplyr)
+library(RColorBrewer)
+library(NLP)
+library(janeaustenr)
+library(stringr)
+library(tidyverse)
+library(readr)
+library(tm)
+library(wordcloud)
+
+#######
+#  r  #
+#######
+
+r_questions_clean <- suppressMessages(read_csv("/var/folders/sg/2ybq97vj0nx4k1n4yxm321bw0000gn/T//RtmpfKIFeD/data57a4f8f8e8b"))
+r_answers_clean <- suppressMessages(read_csv("/var/folders/sg/2ybq97vj0nx4k1n4yxm321bw0000gn/T//Rtmp6KHvvI/data1bbf2c789dfa"))
+r_Tags <- read.csv("~/Downloads/rquestions/Tags.csv")
+
+
+# merge questions and tags to find connections
+names(r_Tags)[names(r_Tags)=="Id"]="ParentId"
+names(r_questions_clean)[names(r_questions_clean)=="Id"]="ParentId"
+total1<- merge(r_questions_clean, r_Tags,by="ParentId")
+total2<-merge(r_questions_clean,r_answers_clean,by="ParentId")
+
+# Score
+boxplot(r_questions_clean$Score,r_answers_clean$Score)
+par(mfrow=c(1,2))
+plot(total2$Score.x,total2$Score.y)
+r_max<-aggregate(Score.y ~ ParentId, total2, max)
+r_agg<-merge(r_questions_clean,r_max)
+plot(r_agg$Score.y,r_agg$Score)
+m.a_q<-lm(r_agg$Score.y~r_agg$Score)
+summary(m.a_q)
+# there's definitely linear correlation between the answer's highest score and the question's score. If you want to get more score, try to answer the most popular questions.
+
+# is there difference between the scores with the answer is accepted or not
+mean(r_answers_clean$Score[r_answers_clean$IsAcceptedAnswer=="True"])
+mean(r_answers_clean$Score[r_answers_clean$IsAcceptedAnswer=="False"])
+median(r_answers_clean$Score[r_answers_clean$IsAcceptedAnswer=="True"])
+median(r_answers_clean$Score[r_answers_clean$IsAcceptedAnswer=="False"])
+wilcox.test(r_answers_clean$Score[r_answers_clean$IsAcceptedAnswer=="True"],r_answers_clean$Score[r_answers_clean$IsAcceptedAnswer=="False"])
+# yes, there is!
+
+# how long you need to wait after creating a question
+time_wait.d<-difftime(total2$CreationDate.y,total2$CreationDate.x,units = "days")
+mean(time_wait.d)
+median(time_wait.d)
+
+# word frequency for question title
+title_words <- r_questions_clean %>%
+  select(ParentId, Score, CreationDate,Title) %>%
+  unnest_tokens(word,Title)
+freq_title_words<-title_words %>%
+  count(word, sort = TRUE)
+head(freq_title_words)
+set.seed(142)   
+dark2 <- brewer.pal(8, "Dark2")
+wordcloud(freq_title_words$word,freq_title_words$n,min.freq = 2000,rot.per=0.2, colors=dark2)
+
+# word frequency for question body
+questionbody_words <- r_questions_clean %>%
+  select(ParentId, Score, CreationDate,Body) %>%
+  unnest_tokens(word,Body)
+freq_questionbody_words<-questionbody_words %>%
+  count(word, sort = TRUE)
+head(freq_questionbody_words,30)
+wordcloud(freq_questionbody_words$word,freq_questionbody_words$n,min.freq = 10000,rot.per=0.2, colors=dark2)
+
+# word frequency for answer body
+answerbody_words <- r_answers_clean %>%
+  select(ParentId, Score, CreationDate,Body) %>%
+  unnest_tokens(word,Body)
+freq_answerbody_words<-answerbody_words %>%
+  count(word, sort = TRUE)
+head(freq_answerbody_words)
+wordcloud(freq_answerbody_words$word,freq_answerbody_words$n,min.freq = 30000,rot.per=0.2, colors=dark2)
+
+# Tags
+# hot topics in R
+freq_r_Tags<-r_Tags %>%
+  count(Tag, sort = TRUE)
+wordcloud(freq_r_Tags$Tag,freq_r_Tags$n,min.freq = 1000,rot.per=0.2, colors=dark2)
+
+############
+#  python  #
+############
+python_questions_features <- suppressMessages(read_csv("/var/folders/sg/2ybq97vj0nx4k1n4yxm321bw0000gn/T//Rtmp6KHvvI/data1bbf36186b2a"))
+python_answers_features <- suppressMessages(read_csv("/var/folders/sg/2ybq97vj0nx4k1n4yxm321bw0000gn/T//Rtmp6KHvvI/data1bbf7d23ae24"))
+python_Tags <- read.csv("~/Downloads/Tags.csv")
+names(python_Tags)[names(python_Tags)=="Id"]="ParentId"
+names(python_questions_features)[names(python_questions_features)=="Id"]="ParentId"
+total.python.tag.question<-merge(python_Tags,python_questions_features,by="ParentId")
+total.python<-merge(python_questions_features,python_answers_features,by="ParentId")
+
+####tag for python wordcloud
+# hot topics in python
+freq_python_Tags<-python_Tags %>%
+  count(Tag, sort = TRUE)
+wordcloud(freq_python_Tags$Tag,freq_python_Tags$n,min.freq = 5000,rot.per=0.2, colors=dark2)
+
+### Scores for answering a python question
+par(mfrow=c(1,2))
+plot(total.python$Score.x,total.python$Score.y)
+python_max<-aggregate(Score.y ~ ParentId, total.python, max)
+python_agg<-merge(python_questions_features,python_max)
+plot(python_agg$Score.y,python_agg$Score)
+m.a_q.python<-lm(python_agg$Score.y~python_agg$Score)
+summary(m.a_q.python)
+# the coefficient is 1.2685582, higher than those in R, which may suggest that you can get more scores anwering the same popular questions in python than R.
+
+################
+#  comparison  #
+################
+
+## compare time to wait for an answer
+time_wait.python.d<-difftime(total.python$CreationDate.y,total.python$CreationDate.x,units = "days")
+mean(time_wait.python.d)
+median(time_wait.python.d)
+wilcox.test(as.numeric(time_wait.d),as.numeric(time_wait.python.d))
+
+par(mfrow=c(1,2))
+hist(as.numeric(time_wait.d[which(as.numeric(time_wait.d)<0.2 & as.numeric(time_wait.d)>0)]))
+hist(as.numeric(time_wait.python.d[which(as.numeric(time_wait.python.d)<0.2 & as.numeric(time_wait.python.d)>0)]))
+
+###compare score of questions
+wilcox.test(r_questions_clean$Score,python_questions_features$Score)
+###compare score of answer
+wilcox.test(r_answers_clean$Score,python_answers_features$Score)
+
+###changes for each language
+hist(r_questions_clean$CreationDate,breaks=20)
+hist(python_questions_features$CreationDate,breaks=20)
+plot(density(as.numeric(r_questions_clean$CreationDate)))
+plot(density(as.numeric(python_questions_features$CreationDate)))
+
+```
