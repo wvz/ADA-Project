@@ -1,0 +1,123 @@
+---
+title: "R Topic Modeling using 'lda' package"
+output: html_notebook
+---
+
+```{r}
+# Load processed R dataset
+RQ.clean = read.csv("~/Google Drive/Columbia/5291 ADA/1202 Project/ADA-Project/data/r_questions_clean3.csv")
+RQ.clean[1,6] = as.character(RQ.clean[1,6]) # convert to characters
+
+x = as.character(RQ.clean[1,6])
+x1 = substr(x, 2, nchar(x)-1)
+x2 = strsplit(x1, ",")
+un(x2)
+# function inside loop inside function inner function acquires stores large vector data memory global variable using r like plus loop loops long list data acquired outer function starts process passes list datasets acquired programmed inner function store dataset moving next work outer function occurs side effects global variables big better worse collecting returning giant memory hogging vector vectors superior third approach would answer change storing data vectors database rather memory ideally like able terminate function fail due network timeouts without losing information processed prior termination
+R.Tags[R.Tags$Id == RQ.clean$Id[2], ] # memory	function	global-variables	side-effects
+
+R.Tags[which(R.Tags$Tag == ".bash-profile"), ]
+RQ.clean[RQ.clean$Id %in% c(30305973, 35646882), ]
+
+length(unique(R.Tags$Tag)) # 5972 unique tags
+sum(grepl("-", unique(R.Tags$Tag))) # 2022 unique tags containing "-"
+R.Tags$Tag[grepl("-", R.Tags$Tag)][1:5]
+```
+
+
+Sample 2% data
+```{r}
+# Sample 2% of data as training data
+set.seed(1202)
+train.id = sample(RQ.clean$Id, 2941, replace = F)
+train.data = RQ.clean[RQ.clean$Id %in% train.id, ]
+x3 <- gsub("[[:punct:]]", "", RQ.clean[train.row, 5])  # title deleted punctuation 
+x4 <- gsub("[[:punct:]]", "", RQ.clean[train.row, 6])  # body deleted punctuation 
+length(x3)
+
+train.row = sample(1:147075, 2942, replace = F)
+train.x3 = x3[train.row]
+train.x4 = x4[train.row]
+head(train.x3)
+
+# convert body to character type
+train.data[ ,6] = as.character(train.data[ ,6]) 
+```
+
+Topic Modeling 
+```{r}
+# Data preparation 
+x4 <- gsub("[[:punct:]]", "", train.data[ ,6])  # delete punctuation 
+doc.list = strsplit(x4, " ")
+
+# delete one-character words
+#x3 = lapply(x2, nchar) 
+#x5 = x2
+#for (i in 1:nrow(train.data)){x5[[i]] = x2[[i]][x3[[i]] > 1]}
+
+
+doc.list[6]
+
+# rename the list by music id
+names(doc.list) <- train.id 
+
+term.table <- table(unlist(doc.list))
+term.table <- sort(term.table, decreasing = TRUE) # terms with freq in decreasing order
+vocab <- names(term.table) # word list
+
+# now put the documents into the format required by the lda package:
+get.terms <- function(x) {
+  index <- match(x, vocab)
+  index <- index[!is.na(index)]
+  rbind(as.integer(index - 1), as.integer(rep(1, length(index))))
+}
+documents <- lapply(doc.list, get.terms) # standard format 
+
+
+# Compute some statistics related to the data set:
+D <- length(documents)  # number of documents (2941)
+W <- length(vocab)  # number of terms in the vocab (19123)
+doc.length <- sapply(documents, function(x) sum(x[2, ]))  # number of tokens per document
+N <- sum(doc.length)  # total number of tokens in the data (290,927)
+term.frequency <- as.integer(term.table)  # frequencies of terms in the corpus 
+
+# MCMC and model tuning parameters:
+K <- 20
+G <- 5000
+alpha <- 0.02
+eta <- 0.02
+
+# Fit the model:
+library(lda)
+set.seed(357)
+system.time(fit <- lda.collapsed.gibbs.sampler(documents = documents, K = K, vocab = vocab, num.iterations = G, alpha = alpha, eta = eta, initial = NULL, burnin = 0, compute.log.likelihood = TRUE)) # 777 s
+
+library(beepr)
+beep(2)
+
+save(fit, doc.list, file = "~/Google Drive/Columbia/5291 ADA/1202 Project/ADA-Project/lib/topic_modeling_fit.RData")
+# load("~/Google Drive/Columbia/5291 ADA/1202 Project/ADA-Project/lib/topic_modeling_fit.RData")
+names(fit)
+```
+
+Visualize
+```{r}
+#visual for lyric_bi topics
+theta <- t(apply(fit$document_sums + alpha, 2, function(x) x/sum(x)))
+phi <- t(apply(t(fit$topics) + eta, 2, function(x) x/sum(x)))
+
+Lyricss <- list(phi = phi,
+                     theta = theta,
+                     doc.length = doc.length,
+                     vocab = vocab,
+                     term.frequency = term.frequency)
+library(servr)
+library(LDAvis)
+# create the JSON object to feed the visualization:
+json <- createJSON(phi = Lyricss$phi, 
+                   theta = Lyricss$theta, 
+                   doc.length = Lyricss$doc.length, 
+                   vocab = Lyricss$vocab, 
+                   term.frequency = Lyricss$term.frequency)
+
+serVis(json, out.dir = 'vissample', open.browser = T)
+```

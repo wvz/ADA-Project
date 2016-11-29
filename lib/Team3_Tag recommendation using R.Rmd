@@ -1,0 +1,219 @@
+---
+title: "Tag recommendation using R"
+output: html_notebook
+---
+  
+Fit topic model and predict topic for new dataset
+```{r}
+library(topicmodels)
+library(RTextTools)
+library(tm)
+
+set.seed(1202)
+train.row = sample(1:147075, 5000, replace = F)
+x3 <- gsub("[[:punct:]]", "", RQ.clean[train.row, 5])  # title deleted punctuation 
+x4 <- gsub("[[:punct:]]", "", RQ.clean[train.row, 6])  # body deleted punctuation 
+# convert frequency to binary
+x5 = vapply(strsplit(x3, " "), function(x) paste(unique(x), collapse = " "), character(1L))
+x6 = vapply(strsplit(x4, " "), function(x) paste(unique(x), collapse = " "), character(1L))
+
+matrix <- create_matrix(cbind(as.vector(x5),as.vector(x6)))
+system.time(train.lda <- LDA(matrix[1:4999, ], control = list(alpha = 0.1), 20)) #243s
+beep(8)
+topics(train.lda)[1:20]
+ldaOut.topics <- as.matrix(topics(train.lda))
+dim(ldaOut.topics) # 4999*1
+doc.topic = x6[ldaOut.topics == test.topic]
+
+# predict for test document
+test.data = matrix[5000, ]
+test.topics <- posterior(train.lda, test.data)
+test.topic <- apply(test.topics$topics, 1, which.max)
+test.topic # Topic 7
+
+save(train.lda, file = "~/Google Drive/Columbia/5291 ADA/1202 Project/ADA-Project/lib/Team3_topicmodels_fit.RData")
+```
+
+
+calculate text similarity
+```{r}
+matrix2 = as.matrix(matrix)
+dim(matrix2)
+
+# subset documents within the test topic
+matrix3 = matrix2[1:4999, ][ldaOut.topics == test.topic, ]
+topic.id = train.id[ldaOut.topics == test.topic]
+
+# calculate cosine distance of test doc and topic docs
+distance = vector()
+library(lsa)
+for (i in 1:length(topic.id)){
+  distance[i] = cosine(rbind(matrix2[5000, ], matrix3[i, ]))
+}
+max(distance) # 0.2463
+sort(distance, decreasing = T)[1:10]
+# 0.2462705 0.2424521 0.2421987 0.2410144 0.2367553 0.2239773 0.2223929 0.2208081 0.2194228 0.2137965
+sum(distance > 0.2) # 17 documents have cos dist > 0.2 with test document
+
+# distance1=vector()
+# for (i in 1:4999){
+#  distance1[i] = cosine(matrix2[5000, ], matrix2[i, ])
+#} # max within topic isn't global max, which is not great
+# max(distance1) # 0.27
+```
+
+Predict tags based on similar documents' tags (kNN)
+```{r}
+R.Tags = read.csv("~/Google Drive/Columbia/5291 ADA/1202 Project/rquestions/Tags.csv")
+# Id for topic documents in distance order
+train.id = RQ.clean$Id[train.row]
+# top.id = topic.id[order(-distance)]
+
+top.tags = R.Tags[R.Tags$Id %in% top.id, ]
+dim(top.tags) # 752*2
+
+# shrink tags based on distance does not work well
+tag.freq = data.frame(table(top.tags$Tag))
+sum(tag.freq$Freq > 10) # 13
+head(tag.freq[order(-tag.freq$Freq), ])
+recom = tag.freq$Var1[order(-tag.freq$Freq)][1:10] # recommended tags
+# dataframe  list       function   matrix     data.table   for-loop   apply    subset     lapply     loops 
+
+x4[5000]
+# "trying select subset variables dataframe rename variables new dataframe large number variables would need rename using dplyr select dplyr select since number variables rename thinking use string variable rename sure could possible using string helps manage newname oldname mapping example dplyr select library dplyr library nycflights set seed data sample flights select data yr year mon month deptime dep time question could pass arguments string newvariable oldvariable arguments use dplyr select col vector year month dep time select data dots col vector string mind rename vector yr year mon month deptime dep time suggestions would helpful"
+recom[recom %in% unlist(strsplit(x6[5000], " "))]
+# dataframe   subset
+unique(top.tags$Tag)[unique(top.tags$Tag) %in% unlist(strsplit(x6[5000], " "))]
+# vector    dataframe   subset    variables  sample    arguments   string   dplyr       select    rename    THIS IS GREAT!!!!!
+test.tags = R.Tags[R.Tags$Id == train.id[5000], ]
+test.tags
+#               Id     Tag
+# 198587	36520813	string		
+# 198588	36520813	dplyr		
+# 198589	36520813	rename
+```
+We should not neglect info in text itself.
+
+Predict for another test doc
+```{r}
+test.data2.t = RQ.clean[-train.row, ][999, 5]
+test.data2.b = RQ.clean[-train.row, ][999, 6]
+test.data2.t = gsub("[[:punct:]]", "", test.data2.t)
+test.data2.b = gsub("[[:punct:]]", "", test.data2.b)
+test.data2.t = vapply(strsplit(test.data2.t, " "), function(x) paste(unique(x), collapse = " "), character(1L))
+test.data2.b = vapply(strsplit(test.data2.b, " "), function(x) paste(unique(x), collapse = " "), character(1L))
+test.matrix <- create_matrix(cbind(as.vector(test.data2.t), as.vector(test.data2.b)))
+
+test.topics2 <- posterior(train.lda, test.matrix)
+test.topic2 <- apply(test.topics2$topics, 1, which.max)
+test.topic2 # Topic 10
+
+# subset documents within the test topic
+matrix6 = matrix2[1:4999, ][ldaOut.topics == test.topic2, ]
+dim(matrix6) # 170*26640
+topic.id2 = train.id[ldaOut.topics == test.topic2]
+length(topic.id2) #171
+
+# calculate cosine distance of test doc and topic docs
+distance.t = vector()
+# library(lsa)
+for (i in 1:nrow(matrix6)){
+  distance.t[i] = cosine(rbind(test.matrix[1, ], matrix6[i, ]))
+}
+max(distance.t) # 0.2463
+sort(distance.t, decreasing = T)[1:10]
+# 0.2462705 0.2424521 0.2421987 0.2410144 0.2367553 0.2239773 0.2223929 0.2208081 0.2194228 0.2137965
+sum(distance.t > 0.2) 
+
+# Id for topic documents in distance order
+#top.id2 = topic.id2[order(-distance.t)]
+
+top.tags2 = R.Tags[R.Tags$Id %in% topic.id2, ]
+dim(top.tags2) # 332*2
+
+# shrink tags based on distance does not work well
+tag.freq2 = data.frame(table(top.tags2$Tag))
+sum(tag.freq2$Freq > 10) # 2
+head(tag.freq2[order(-tag.freq2$Freq), ])
+recom2 = tag.freq2$Var1[order(-tag.freq2$Freq)][1:10] # recommended tags
+# shiny          shinyapps      ggplot2        ggvis          shiny-server   javascript     shinydashboard     html         dplyr          dt  
+
+test.data2.b
+# "working web based application implemented java commodity prices one part interactive charting provide simplified example table mysql database information us states counties aspect create plots user choice needs see price density oregon linn county chooses menu webpage rendered fly accompanying quantile changes state change computational need using use rjava integrate know interactivity issue piece cake ggplot aware version graphics framework like lattice exploring google visualization api sure statistical power please help"
+recom2[recom2 %in% unlist(strsplit(test.data2.b, " "))]
+# None
+unique(top.tags2$Tag)[unique(top.tags2$Tag) %in% unlist(strsplit(test.data2.b, " "))]
+# table       interactive
+test.id2 = RQ.clean$Id[-train.row][999]
+test.tags2 = R.Tags[R.Tags$Id == test.id2, ]
+test.tags2
+#               Id     Tag
+#                     java
+
+```
+
+Another test
+```{r}
+test.data2.t = RQ.clean[-train.row, ][33333, 5]
+test.data2.b = RQ.clean[-train.row, ][33333, 6]
+test.data2.t = gsub("[[:punct:]]", "", test.data2.t)
+test.data2.b = gsub("[[:punct:]]", "", test.data2.b)
+test.data2.t = vapply(strsplit(test.data2.t, " "), function(x) paste(unique(x), collapse = " "), character(1L))
+test.data2.b = vapply(strsplit(test.data2.b, " "), function(x) paste(unique(x), collapse = " "), character(1L))
+test.matrix <- create_matrix(cbind(as.vector(test.data2.t), as.vector(test.data2.b)))
+
+test.topics2 <- posterior(train.lda, test.matrix)
+test.topic2 <- apply(test.topics2$topics, 1, which.max)
+test.topic2 # Topic 10
+
+# subset documents within the test topic
+matrix6 = matrix2[1:4999, ][ldaOut.topics == test.topic2, ]
+dim(matrix6) # 538*26640
+topic.id2 = train.id[ldaOut.topics == test.topic2]
+length(topic.id2) #171
+
+# calculate cosine distance of test doc and topic docs
+#distance.t = vector()
+# library(lsa)
+#for (i in 1:nrow(matrix6)){
+#  distance.t[i] = cosine(rbind(test.matrix, matrix6[i, ]))
+#}
+#max(distance.t) # 0.2463
+#sort(distance.t, decreasing = T)[1:10]
+# 0.2462705 0.2424521 0.2421987 0.2410144 0.2367553 0.2239773 0.2223929 0.2208081 0.2194228 0.2137965
+#sum(distance.t > 0.2) 
+
+# Id for topic documents in distance order
+#top.id2 = topic.id2[order(-distance.t)]
+
+top.tags2 = R.Tags[R.Tags$Id %in% topic.id2, ]
+dim(top.tags2) # 856*2
+
+# shrink tags based on distance does not work well
+tag.freq2 = data.frame(table(top.tags2$Tag))
+sum(tag.freq2$Freq > 10) # 10
+head(tag.freq2[order(-tag.freq2$Freq), ])
+recom2 = tag.freq2$Var1[order(-tag.freq2$Freq)][1:10] # recommended tags
+# ggplot2      plot         legend       histogram    lattice      bar-chart      boxplot      graph        scatter-plot colors 
+
+test.data2.b
+# "want add third data set scatterplot values orders magnitude larger two sets way plot three one window signifying right axis color matching use points tried xlab mb ylab pi yall pch cex col blue type lines filtered red gets plotted know next step ideally green differently scaled appear also basically plotting parameters met normalized"
+recom2[recom2 %in% unlist(strsplit(test.data2.b, " "))] # if we only recommend top 10 tags
+# plot
+unique(top.tags2$Tag)[unique(top.tags2$Tag) %in% unlist(strsplit(test.data2.b, " "))]
+# plot   axis   add    set    pch    lines  points
+test.id2 = RQ.clean$Id[-train.row][33333]
+test.tags2 = R.Tags[R.Tags$Id == test.id2, ]
+test.tags2
+#               Id           Tag
+# 53052  	18872649	        plot		
+# 53053	  18872649	scatter-plot
+
+xxxxx = vector()
+for (i in 1:length(unlist(strsplit(test.data2.b, " ")))){
+  temp = grep(unlist(strsplit(test.data2.b, " "))[i], unique(top.tags2$Tag), value = T)
+  xxxxx = c(xxxxx, temp)
+}
+xxxxx
+```
+
