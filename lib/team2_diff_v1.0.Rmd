@@ -17,6 +17,8 @@ library(tidyverse)
 library(readr)
 library(tm)
 library(wordcloud)
+library(reshape2)
+library(igraph) # word network
 
 #######
 #  r  #
@@ -139,7 +141,6 @@ r_Tags_pairs <- as.data.frame(r_Tags_pairs,stringsAsFactors = F)
 # all count is twice as the real one
 counts <- ddply(r_Tags_pairs, .(r_Tags_pairs$Tag.x, r_Tags_pairs$Tag.y), nrow)
 names(counts) <- c("Tag.x", "Tag.y", "Freq")
-library(reshape2)
 count_matrix=dcast(counts, Tag.x ~ Tag.y, value.var="Freq",fill=0)
 # add 0's then sort
 row_miss <- data.frame(Tag.x=as.character(r_Tags_top1k[!(r_Tags_top1k %in% r_Tags_pairs$Tag.x)]),stringsAsFactors = F)
@@ -150,4 +151,27 @@ row.names(count_matrix) <- count_matrix$Tag.x
 count_matrix <- count_matrix[,-1]
 count_matrix <- count_matrix[ , order(names(count_matrix))]
 count_matrix[is.na(count_matrix)] <- 0
+
+### word network
+# build a graph from the above matrix
+g <- graph.adjacency(as.matrix(count_matrix), weighted=T, mode = "undirected")
+# remove loops
+g <- simplify(g)
+# set labels and degrees of vertices
+V(g)$label <- V(g)$name
+V(g)$degree <- degree(g)
+
+# set seed to make the layout reproducible
+set.seed(3952)
+layout1 <- layout.fruchterman.reingold(g)
+plot(g, layout=layout1)
+# Better look: set the label size of vertices based on their degrees, to make important terms stand out
+V(g)$label.cex <- 2.2 * V(g)$degree / max(V(g)$degree)+ .2
+V(g)$label.color <- rgb(0, 0, .2, .8)
+V(g)$frame.color <- NA
+egam <- (log(E(g)$weight)+.4) / max(log(E(g)$weight)+.4)
+E(g)$color <- rgb(.5, .5, 0, egam)
+E(g)$width <- egam
+# plot the graph in layout1
+plot(g, layout=layout1)
 ```
