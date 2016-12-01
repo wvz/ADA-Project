@@ -154,24 +154,56 @@ count_matrix[is.na(count_matrix)] <- 0
 
 ### word network
 # build a graph from the above matrix
-g <- graph.adjacency(as.matrix(count_matrix), weighted=T, mode = "undirected")
-# remove loops
-g <- simplify(g)
-# set labels and degrees of vertices
-V(g)$label <- V(g)$name
-V(g)$degree <- degree(g)
+plot_network <- function(count_matrix){
+  # build a graph from the above matrix
+  g <- graph.adjacency(as.matrix(count_matrix), weighted=T, mode = "undirected")
+  # remove loops
+  g <- simplify(g)
+  # set labels and degrees of vertices
+  V(g)$label <- V(g)$name
+  V(g)$degree <- degree(g)
+#   # Generate colors based on media type:
+#   colrs <- c("gray50", "tomato", "gold")
+#   V(net)$color <- colrs[V(net)$media.type]
+  
+  # set seed to make the layout reproducible
+  set.seed(3952)
+  layout1 <- layout.fruchterman.reingold(g)
+  # Better look: set the label size of vertices based on their degrees, to make important terms stand out
+  V(g)$label.cex <- 2.2 * V(g)$degree / max(V(g)$degree)+ .2
+  V(g)$label.color <- rgb(0, 0, .2, .8)
+  V(g)$frame.color <- NA
+  egam <- (log(E(g)$weight)+.4) / max(log(E(g)$weight)+.4)
+  E(g)$color <- rgb(.5, .5, 0, egam)
+  E(g)$width <- egam
+  # plot the graph in layout1
+  plot(g, layout=layout1)
+}
+plot_network(count_matrix)
 
-# set seed to make the layout reproducible
-set.seed(3952)
-layout1 <- layout.fruchterman.reingold(g)
-plot(g, layout=layout1)
-# Better look: set the label size of vertices based on their degrees, to make important terms stand out
-V(g)$label.cex <- 2.2 * V(g)$degree / max(V(g)$degree)+ .2
-V(g)$label.color <- rgb(0, 0, .2, .8)
-V(g)$frame.color <- NA
-egam <- (log(E(g)$weight)+.4) / max(log(E(g)$weight)+.4)
-E(g)$color <- rgb(.5, .5, 0, egam)
-E(g)$width <- egam
-# plot the graph in layout1
-plot(g, layout=layout1)
+#### python word network
+python_Tags_top1k <- freq_python_Tags$Tag[1:20]
+python_Tags_2 <- python_Tags[python_Tags$Tag %in% python_Tags_top1k,]
+python_Tags_pairs <- merge(python_Tags_2,python_Tags_2,by="Id")
+# remove duplicated combinations
+python_Tags_pairs <- subset(python_Tags_pairs, Tag.x!=Tag.y)
+python_Tags_pairs[,2:3] <- t(apply(python_Tags_pairs[,2:3], 1, sort))# really slow!!
+python_Tags_pairs <- as.data.frame(python_Tags_pairs,stringsAsFactors = F)
+#r_Tags_pairs <- r_Tags_pairs[!duplicated(r_Tags_pairs),]
+# group_by(r_Tags_pairs,Tag.x,Tag.y) %>% count(ParentId) %>% summarise(length(n))
+counts <- ddply(python_Tags_pairs, .(python_Tags_pairs$Tag.x, python_Tags_pairs$Tag.y), nrow)
+names(counts) <- c("Tag.x", "Tag.y", "Freq")
+library(reshape2)
+count_matrix=dcast(counts, Tag.x ~ Tag.y, value.var="Freq",fill=0)
+# add 0's then sort
+row_miss <- data.frame(Tag.x=as.character(python_Tags_top1k[!(python_Tags_top1k %in% python_Tags_pairs$Tag.x)]),stringsAsFactors = F)
+count_matrix <- bind_rows(count_matrix,row_miss)
+col_miss <- as.character(python_Tags_top1k[!(python_Tags_top1k %in% python_Tags_pairs$Tag.y)])
+count_matrix[col_miss] <- 0
+row.names(count_matrix) <- count_matrix$Tag.x
+count_matrix <- count_matrix[,-1]
+count_matrix <- count_matrix[ , order(names(count_matrix))]
+count_matrix[is.na(count_matrix)] <- 0
+
+plot_network(count_matrix)
 ```
