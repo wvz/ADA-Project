@@ -1,0 +1,117 @@
+---
+title: "Team1"
+author: "HanqingShi"
+date: "2016-11-30"
+output: html_document
+---
+
+# R Score & Time Analysis
+
+## R Score EDA
+
+```{r, echo=FALSE}
+RA <- read.csv(file = "r_answers_clean.csv.txt", header = T, nrows = 100)
+classRA <- sapply(RA, class)
+RA <- read.csv(file = "r_answers_clean.csv.txt", header = T, colClasses = classRA)
+RAscore <- RA[,"Score"]
+rm(RA);
+summary(RAscore);
+boxplot(RAscore, cex=.5, maim="R Answer Score")
+hist(RAscore, xlim = c(-10,60), breaks = 1000)
+rm(RAscore);
+```
+
+Choose the good answer threshold = 3, the 3rd quantile.
+
+## R Time EDA
+Time(hours) = time spent until get a good answer
+Label = 1, questions get good answers, Label = 0, otherwise.
+
+Total number of questions is 147071. Number of questions with Time=0 is 110. Number of questions never get a good answer is 100636.
+
+```{r, echo=FALSE}
+suppressWarnings( load("RRegressionPositiveBinary.RData") )
+attach(RRegPosiBi)
+summary(Time);
+boxplot(Time[Time!=max(Time)], main="Time with Label=1")
+hist(Time, xlim = c(-100,200), ylim = c(0,8000), breaks=1000)
+```
+
+## Random Forest
+Score ~ tag_count + max_tag_freq + sum_tag_freq + body_length + title_length + body_word_count + title_word_count + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length
+
+MSE = 8.2
+
+![](R_feature_importance.png)
+
+## Logistic Regression
+Label prediction: Split data into train(80%) and test(20%), do logistic regression, calculate prediction accuracy.
+
+```{r, echo=FALSE}
+set.seed(5291)
+testindex <- sample.int(n=147071, size=29414)
+suppressWarnings( fitRtrain <- glm(Label ~ Score, family = "binomial", data = RRegPosiBi[-testindex,]) )
+summary(fitRtrain)$coef
+prelabel <- predict.glm(fitRtrain, RRegPosiBi[testindex,], type = "response")
+prelabel[prelabel<0.5]=0
+prelabel[prelabel>=0.5]=1
+preaccuracy <- length( which(prelabel == RRegPosiBi$Label[testindex]) ) / 29414
+detach(RRegPosiBi)
+```
+
+Prediction Accuracy = 0.7927178
+
+
+## Python Score EDA
+
+```{r, echo=FALSE}
+PA <- read.csv(file = "Python_Answers_clean.csv", header = T, sep = "\t", nrows = 100)
+classPA <- sapply(PA, class)
+PA <- read.csv(file = "Python_Answers_clean.csv", header = T, sep = "\t", colClasses = classPA)
+PAscore <- PA[,"Score"]
+rm(PA);
+summary(PAscore);
+boxplot(PAscore, cex=.5, main="Python Answer Score")
+hist(PAscore, xlim = c(-40,60), breaks = 4000)
+rm(PAscore);
+```
+
+Choose the good answer threshold = 3, the 3rd quantile.
+
+## Python Time EDA
+
+Total number of questions is 607276. Number of questions with Time=0 is 429. Number of questions never get a good answer is 430177.
+
+```{r, echo=FALSE}
+suppressWarnings( load("PythonRegressionPositiveBinary.RData") )
+attach(PRegPosiBi)
+summary(Time);
+boxplot(Time[Time!=max(Time)], main="Time with Label=1")
+hist(Time, xlim = c(-100,200), ylim = c(0,50000), breaks=1000)
+```
+
+## Random Forest
+Score ~ tag_count + max_tag_freq + sum_tag_freq + body_length + title_length + body_word_count + title_word_count + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length
+
+MSE = 19.1
+
+![](Python_feature_importance.png)
+
+## Logistic Regression
+Label prediction: Split data into train(80%) and test(20%), do logistic regression, calculate prediction accuracy.
+
+```{r, echo=FALSE}
+set.seed(5291)
+testindex <- sample.int(n=607276, size=121455)
+suppressWarnings( fitPtrain <- glm(Label ~ Score, family = "binomial", data = PRegPosiBi[-testindex,]) )
+summary(fitPtrain)$coef
+prelabel <- predict.glm(fitPtrain, PRegPosiBi[testindex,], type = "response")
+prelabel[prelabel<0.5]=0
+prelabel[prelabel>=0.5]=1
+preaccuracy <- length( which(prelabel == PRegPosiBi$Label[testindex]) ) / 121455
+detach(PRegPosiBi)
+```
+
+Prediction Accuracy = 0.7923346
+
+
