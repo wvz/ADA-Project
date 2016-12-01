@@ -79,9 +79,14 @@ From the word cloud, we can see the focus attentions for R are ggplot2, datafram
 <br>
 R Answer Score summary:
 <br>
+```{r table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
 | Min.   | 1st Qu. | Median | Mean   | 3rd Qu. | Max      |
 | -----  | :-----: | :----: | :----: | :-----: | -------: |
 | -8.000 | 1.000   | 1.000  | 2.833  | 3.000   | 1058.000 |
+"
+cat(tabl)
+```
 <br>
 <br>
 <center><img src="./figs/RAScore.hist1.png"  width="700px"" /></center>
@@ -104,9 +109,15 @@ Total number of questions is 147071. Number of questions with Time=0 is 110. Num
 <br>
 <br>
 R Time summary:
- Min. |1st Qu.|Median | Mean  |3rd Qu.| Max  
-------|-------|-------|-------|-------|-------
- 0.00 | 24.97 |1894.00|1302.00|1894.00|1894.00
+<br>
+```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+| Min. |1st Qu.|Median | Mean  |3rd Qu.| Max   |
+|------|-------|-------|-------|-------|-------|
+| 0.00 | 24.97 |1894.00|1302.00|1894.00|1894.00|
+"
+cat(tabl)
+```
 <br>
 <br>
 <center><img src="./figs/RTime.png"  width="700px"" /></center>
@@ -133,11 +144,15 @@ Label prediction: Split data into train(80%) and test(20%), do logistic regressi
 Prediction Accuracy = 0.7927178
 <br>
 <br>
-           | Estimate | Std.Error | z value |Pr(>|z|)
------------|----------|-----------|---------|--------
-(Intercept)|-1.7259480|0.009928074|-173.8452|  0
------------|----------|-----------|---------|--------
-Score      | 0.6181663|0.004818347|128.2943 |  0
+```{r table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+|           | Estimate | Std.Error | z value |Pr(>abs(z))|
+|-----------|----------|-----------|---------|-----------|
+|(Intercept)|-1.7259480|0.009928074|-173.8452|  0        |
+|Score      | 0.6181663|0.004818347|128.2943 |  0        |
+"
+cat(tabl)
+```
 <br>
 <br>
 <br>
@@ -145,9 +160,15 @@ Score      | 0.6181663|0.004818347|128.2943 |  0
 <br>
 <br>
 Python Answer Score summary:
- Min.  |1st Qu.|Median| Mean|3rd Qu.|   Max  
--------|-------|------|-----|-------|--------
--38.000| 0.000 | 1.000|3.028| 3.000 |8384.000
+<br>
+```{r table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+| Min.  |1st Qu.|Median| Mean|3rd Qu.|   Max  |
+|-------|-------|------|-----|-------|--------|
+|-38.000| 0.000 | 1.000|3.028| 3.000 |8384.000|
+"
+cat(tabl)
+```
 <br>
 <br>
 <center><img src="./figs/PAScore.hist1.png"  width="700px"" /></center>
@@ -166,9 +187,14 @@ Total number of questions is 607276. Number of questions with Time=0 is 429. Num
 <br>
 <br>
 Python Time summary:
- Min. |1st Qu.|Median | Mean  |3rd Qu.| Max  
-------|-------|-------|-------|-------|-------
- 0.0  | 26.6  |2212.0 |1572.0 |2212.0 |2212.0
+```{r table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+| Min. |1st Qu.|Median | Mean  |3rd Qu.| Max   |
+|------|-------|-------|-------|-------|-------|
+| 0.0  | 26.6  |2212.0 |1572.0 |2212.0 |2212.0 |
+"
+cat(tabl)
+```
 <br>
 <br>
 <center><img src="./figs/PTime.png"  width="700px"" /></center>
@@ -195,11 +221,15 @@ Label prediction: Split data into train(80%) and test(20%), do logistic regressi
 Prediction Accuracy = 0.7923346
 <br>
 <br>
-           | Estimate | Std.Error | z value |Pr(>|z|)
------------|----------|-----------|---------|--------
-(Intercept)|-1.7462727|0.004808411|-363.1704|  0
------------|----------|-----------|---------|--------
-Score      | 0.5649856|0.002307515| 244.8459|  0
+```{r table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+|           | Estimate | Std.Error | z value |Pr(>abs(z))|
+|-----------|----------|-----------|---------|-----------|
+|(Intercept)|-1.7462727|0.004808411|-363.1704|  0        |  
+|Score      | 0.5649856|0.002307515| 244.8459|  0        |
+"
+cat(tabl)
+```
 
 <br>
 <br>
