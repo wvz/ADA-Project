@@ -67,9 +67,144 @@ From the word cloud, we can see the focus attentions for R are ggplot2, datafram
 **Question 4: Predict Scores you can get as being active on the website?**
 
 
+<br>
+<br>
+
+
+## Score & Time Analysis
+<br>
+<br>
+**R Answer Score EDA**
+<br>
+<br>
+R Answer Score summary:
+ Min. |1st Qu.|Median| Mean|3rd Qu.|   Max  
+------|-------|------|-----|-------|--------
+-8.000| 1.000 | 1.000|2.833| 3.000 |1058.000
+<br>
+<br>
+<center><img src="./figs/RAScore.hist1.png"  width="700px"" /></center>
+<br>
+<br>
+<center><img src="./figs/RAScore.hist2.png"  width="700px"" /></center>
+<br>
+<br>
+Choose the good answer threshold = 3, the 3rd quantile.
+<br>
+<br>
+**R Time EDA**
+<br>
+<br>
+Time(hours) = time spent until get a good answer
+Label = 1, questions get good answers, Label = 0, otherwise.
+<br>
+<br>
+Total number of questions is 147071. Number of questions with Time=0 is 110. Number of questions never get a good answer is 100636.
+<br>
+<br>
+R Time summary:
+ Min. |1st Qu.|Median | Mean  |3rd Qu.| Max  
+------|-------|-------|-------|-------|-------
+ 0.00 | 24.97 |1894.00|1302.00|1894.00|1894.00
+<br>
+<br>
+<center><img src="./figs/RTime.png"  width="700px"" /></center>
+<br>
+<br>
+**Random Forest**
+<br>
+<br>
+Score ~ tag_count + max_tag_freq + sum_tag_freq + body_length + title_length + body_word_count + title_word_count + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length
+<br>
+<br>
+MSE = 8.2
+<br>
+<br>
+<center><img src="./figs/R_feature_importance.png"  width="700px"" /></center>
+<br>
+<br>
+**Logistic Regression**
+<br>
+<br>
+Label prediction: Split data into train(80%) and test(20%), do logistic regression, calculate prediction accuracy.
+<br>
+<br>
+Prediction Accuracy = 0.7927178
+<br>
+<br>
+           | Estimate | Std.Error | z value |Pr(>|z|)
+-----------|----------|-----------|---------|--------
+(Intercept)|-1.7259480|0.009928074|-173.8452|  0
+-----------|----------|-----------|---------|--------
+Score      | 0.6181663|0.004818347|128.2943 |  0
+<br>
+<br>
+<br>
+**Python Answer Score EDA**
+<br>
+<br>
+Python Answer Score summary:
+ Min.  |1st Qu.|Median| Mean|3rd Qu.|   Max  
+-------|-------|------|-----|-------|--------
+-38.000| 0.000 | 1.000|3.028| 3.000 |8384.000
+<br>
+<br>
+<center><img src="./figs/PAScore.hist1.png"  width="700px"" /></center>
+<br>
+<br>
+<center><img src="./figs/PAScore.hist2.png"  width="700px"" /></center>
+<br>
+<br>
+Choose the good answer threshold = 3, the 3rd quantile.
+<br>
+<br>
+**Python Time EDA**
+<br>
+<br>
+Total number of questions is 607276. Number of questions with Time=0 is 429. Number of questions never get a good answer is 430177.
+<br>
+<br>
+Python Time summary:
+ Min. |1st Qu.|Median | Mean  |3rd Qu.| Max  
+------|-------|-------|-------|-------|-------
+ 0.0  | 26.6  |2212.0 |1572.0 |2212.0 |2212.0
+<br>
+<br>
+<center><img src="./figs/PTime.png"  width="700px"" /></center>
+<br>
+<br>
+**Random Forest**
+<br>
+<br>
+Score ~ tag_count + max_tag_freq + sum_tag_freq + body_length + title_length + body_word_count + title_word_count + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length
+<br>
+<br>
+MSE = 19.1
+<br>
+<br>
+<center><img src="./figs/Python_feature_importance.png"  width="700px"" /></center>
+<br>
+<br>
+**Logistic Regression**
+<br>
+<br>
+Label prediction: Split data into train(80%) and test(20%), do logistic regression, calculate prediction accuracy.
+<br>
+<br>
+Prediction Accuracy = 0.7923346
+<br>
+<br>
+           | Estimate | Std.Error | z value |Pr(>|z|)
+-----------|----------|-----------|---------|--------
+(Intercept)|-1.7462727|0.004808411|-363.1704|  0
+-----------|----------|-----------|---------|--------
+Score      | 0.5649856|0.002307515| 244.8459|  0
 
 <br>
 <br>
+<br>
+
+
 
 ## Topic Modeling
 
