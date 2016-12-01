@@ -79,11 +79,9 @@ From the word cloud, we can see the focus attentions for R are ggplot2, datafram
 <br>
 R Answer Score summary:
 <br>
- Min. |1st Qu.|Median| Mean|3rd Qu.|   Max  
-<br>
-------|-------|------|-----|-------|--------
-<br>
--8.000| 1.000 | 1.000|2.833| 3.000 |1058.000
+| Min. |1st Qu.|Median| Mean |3rd Qu.|   Max  |
+|:-----|:-----:|:----:|:----:|:-----:|-------:|
+|-8.000| 1.000 | 1.000| 2.833| 3.000 |1058.000|
 <br>
 <br>
 <center><img src="./figs/RAScore.hist1.png"  width="700px"" /></center>
