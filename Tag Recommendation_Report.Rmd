@@ -58,7 +58,7 @@ The similarity of two questions given by `Jaccard Index`
 $$J(A,B) = \frac{|A \cap B|}{|A \cup B|}$$
 
 <br>
-Count and sort tags of these questions, then take out 20 most frequent tags.
+Count tags of these questions.
 
 <center><img src="./figs/table1.png"  width="550px"" /></center>
 
@@ -71,7 +71,7 @@ The tags marked blue above table appear in the body of question, so we increase 
 Finally, we recommend the top 6 tags to this question.
 
 <br>
-Repeat this process for whole test set, the accuracy of recommend correct tags is `71%`.
+Repeat this process for whole test set, the accuracy of recommend correct tags is `73%`.
 
 <center><img src="./figs/recommend.png"  width="700px"" /></center>
 
