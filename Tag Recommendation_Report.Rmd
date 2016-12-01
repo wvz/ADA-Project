@@ -6,6 +6,67 @@ output:
     toc: true
     highlight: pygments
 ---
+<style type="text/css">
+
+body{ /* Normal  */
+   font-size: 16px;
+}
+td {  /* Table  */
+   font-size: 12px;
+}
+h1 { /* Header 1 */
+ font-size: 28px;
+ color: DarkBlue;
+}
+h2 { /* Header 2 */
+ font-size: 25px;
+ color: DarkBlue;
+}
+h3 { /* Header 3 */
+ font-size: 20px;
+ color: DarkBlue;
+}
+code.r{ /* Code block */
+  font-size: 10px;
+}
+pre { /* Code block */
+  font-size: 12px
+}
+</style>
+
+## Comparison With R & Python
+
+<br>
+
+**Question1: How do they change in terms of the popularity degree in past 8 years?**
+<br>
+<br>
+Below is the question’s amount change from 2008 to 2016. It shows that Python and R keep growing in a high speed. Under the assumption that Stack Overflow is a relatively mature Q&A website that it’s users number doesn’t change extremely.
+<br>
+<br>
+<br>
+<center><img src="./figs/Team2_pic1.png"  width="700px"" /></center>
+<br>
+<br>
+<br>
+
+**Question 2: What’s the hottest topics for the two languages respectively?**
+<br>
+<br>
+From the word cloud, we can see the focus attentions for R are ggplot2, dataframe and shiny, concentrating on data visualization and report delivery. Also, statistics, regression are common topics for R.
+<br>
+<br>
+<br>
+<center><img src="./figs/Team2_pic2.png"  width="900px"" /></center>
+<br>
+<br>
+<br>
+
+**Question 3: How long does it take to have an answer posted after asking a question on Stack Overflow? **
+
+**Question 4: Predict Scores you can get as being active on the website?**
+
+
 
 <br>
 <br>
