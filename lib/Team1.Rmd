@@ -1,0 +1,75 @@
+---
+title: "Team1"
+author: "HanqingShi"
+date: "2016-11-30"
+output: html_document
+---
+
+
+```{r}
+# R Answer Score EDA
+summary(RAscore);
+boxplot(RAscore, cex=.5)
+hist(RAscore, xlim = c(-10,1100), breaks = 1000)
+hist(RAscore, xlim = c(-10,60), breaks = 1000)
+plot(RAscore, type = "l")
+plot(sort(RAscore, decreasing = T), type = "p", cex=0.2)
+# Choose the good answer threshold = 3, the 3rd quantile
+threshold <- 3;
+```
+
+```{r}
+# Time(hours) = time spent until get a good answer
+# Label=1 questions get good answers, Label=0 questions don't get good answers
+# R Time EDA
+summary(Time)
+length(which(Time==0))
+length(which(Time==max(Time)))
+boxplot(Time[Time!=max(Time)])
+hist(Time, breaks=1000)
+hist(Time, xlim = c(-100,200), ylim = c(0,8000), breaks=1000)
+```
+
+
+```{r}
+# Label Prediction
+# Split data into train(80%) and test(20%), do logistic regression, calculate prediction accuracy
+suppressWarnings( fitRtrain <- glm(Label ~ Score, family = "binomial", data = RRegPosiBi[-testindex,]) )
+summary(fitRtrain)$coef
+preaccuracy
+```
+
+```{r}
+# Python Answer Score EDA
+summary(PAscore);
+boxplot(PAscore, cex=.5)
+hist(PAscore, xlim = c(-40,8500), breaks = 1000)
+hist(PAscore, xlim = c(-40,60), breaks = 4000)
+plot(PAscore, type = "l")
+# choose the good answer threshold = 3, the 3rd quantile
+threshold <- 3;
+```
+
+
+```{r}
+# Time(hours) = time spent until get a good answer
+# Label=1 questions get good answers, Label=0 questions don't get good answers
+# Python Time EDA, #questions=607276
+summary(Time)
+length(which(Time==0))
+length(which(Time==max(Time)))
+boxplot(Time[Time!=max(Time)])
+hist(Time, breaks=1000)
+hist(Time, xlim = c(-100,200), ylim = c(0,50000), breaks=1000)
+```
+
+
+```{r}
+# Label Prediction
+# Split data into train(80%) and test(20%), do logistic regression, calculate prediction accuracy
+suppressWarnings( fitPtrain <- glm(Label ~ Score, family = "binomial", data = PRegPosiBi[-testindex,]) )
+summary(fitPtrain)$coef
+preaccuracy
+```
+
+
