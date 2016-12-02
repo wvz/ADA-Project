@@ -79,7 +79,8 @@ Each dataset is organized as three tables:
   2. Answers contains the body, creation date, score, and owner ID for each of the answers to these questions. The ParentId column links back to the Questions table.
 
   3. Tags contains the tags on each question besides the language ('R' or 'Python') tag.
-
+<br>  
+<center><img src="./figs/questions.png"  width="650px" hspace="30"" /><img src="./figs/tags.png"  width="155px"" /></center>
 <br>
 
 ## Comparison between R & Python Questions
