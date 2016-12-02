@@ -140,7 +140,7 @@ It indicates that you can get higher score by answering popular questions. Also,
 ## Score & Time Analysis
 <br>
 <br>
-**R Answer Score EDA**
+**Answer Score EDA**
 <br>
 <br>
 R Answer Score summary:
@@ -155,25 +155,36 @@ cat(tabl)
 ```
 <br>
 <br>
-<center><img src="./figs/RAScore.hist2.png"  width="400px"" /></center>
+Python Answer Score summary:
+<br>
+```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+| Min.  |1st Qu.|Median| Mean|3rd Qu.|   Max  |
+|-------|-------|------|-----|-------|--------|
+|-38.000| 0.000 | 1.000|3.028| 3.000 |8384.000|
+"
+cat(tabl)
+```
+<br>
+<center><img src="./figs/RAScore.hist2.png"  width="400px"" /><img src="./figs/PAScore.hist2.png"  width="400px"" /></center>
 <br>
 <br>
 Choose the good answer threshold = 3, the 3rd quantile.
 <br>
 <br>
-**R Time EDA**
+**Time EDA**
 <br>
 <br>
 Time(hours) = time spent until get a good answer
 Label = 1, questions get good answers, Label = 0, otherwise.
 <br>
 <br>
-Total number of questions is 147071. Number of questions with Time=0 is 110. Number of questions never get a good answer is 100636.
+R Questions: Total number of questions is 147071. Number of questions with Time=0 is 110. Number of questions never get a good answer is 100636.
 <br>
 <br>
 R Time summary:
 <br>
-```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+```{r table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 | Min. |1st Qu.|Median | Mean  |3rd Qu.| Max   |
 |------|-------|-------|-------|-------|-------|
@@ -183,67 +194,7 @@ cat(tabl)
 ```
 <br>
 <br>
-<center><img src="./figs/RTime.png"  width="400px"" /></center>
-<br>
-<br>
-**Random Forest**
-<br>
-<br>
-Score ~ tag_count + max_tag_freq + sum_tag_freq + body_length + title_length + body_word_count + title_word_count + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length
-<br>
-<br>
-MSE = 8.2
-<br>
-<br>
-<center><img src="./figs/R_feature_importance.png"  width="700px"" /></center>
-<br>
-<br>
-**Logistic Regression**
-<br>
-<br>
-Label prediction: Split data into train(80%) and test(20%), do logistic regression, calculate prediction accuracy.
-<br>
-<br>
-Prediction Accuracy = 0.7927178
-<br>
-<br>
-```{r table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
-tabl <- "
-|           | Estimate | Std.Error | z value |Pr(>abs(z))|
-|-----------|----------|-----------|---------|-----------|
-|(Intercept)|-1.7259480|0.009928074|-173.8452|  0        |
-|Score      | 0.6181663|0.004818347|128.2943 |  0        |
-"
-cat(tabl)
-```
-<br>
-<br>
-<br>
-**Python Answer Score EDA**
-<br>
-<br>
-Python Answer Score summary:
-<br>
-```{r table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
-tabl <- "
-| Min.  |1st Qu.|Median| Mean|3rd Qu.|   Max  |
-|-------|-------|------|-----|-------|--------|
-|-38.000| 0.000 | 1.000|3.028| 3.000 |8384.000|
-"
-cat(tabl)
-```
-<br>
-<br>
-<center><img src="./figs/PAScore.hist2.png"  width="400px"" /></center>
-<br>
-<br>
-Choose the good answer threshold = 3, the 3rd quantile.
-<br>
-<br>
-**Python Time EDA**
-<br>
-<br>
-Total number of questions is 607276. Number of questions with Time=0 is 429. Number of questions never get a good answer is 430177.
+Python questions: Total number of questions is 607276. Number of questions with Time=0 is 429. Number of questions never get a good answer is 430177.
 <br>
 <br>
 Python Time summary:
@@ -257,19 +208,19 @@ cat(tabl)
 ```
 <br>
 <br>
-<center><img src="./figs/PTime.png"  width="400px"" /></center>
+<center><img src="./figs/RTime.png"  width="400px"" /><img src="./figs/PTime.png"  width="400px"" /></center>
 <br>
 <br>
-**Random Forest**
+**Gradient Boosting Trees: XGBoost**
 <br>
 <br>
 Score ~ tag_count + max_tag_freq + sum_tag_freq + body_length + title_length + body_word_count + title_word_count + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length
 <br>
 <br>
-MSE = 19.1
+$\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ $R Questions: MSE = 8.2; $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ $    Python Questions: MSE = 19.1
 <br>
 <br>
-<center><img src="./figs/Python_feature_importance.png"  width="700px"" /></center>
+<center><img src="./figs/R_feature_importance.png"  width="400px"" /><img src="./figs/Python_feature_importance.png"  width="400px"" /></center>
 <br>
 <br>
 **Logistic Regression**
@@ -278,7 +229,21 @@ MSE = 19.1
 Label prediction: Split data into train(80%) and test(20%), do logistic regression, calculate prediction accuracy.
 <br>
 <br>
-Prediction Accuracy = 0.7923346
+R Questions: Prediction Accuracy = 0.7927178;  
+<br>
+<br>
+```{r table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+|           | Estimate | Std.Error | z value |Pr(>abs(z))|
+|-----------|----------|-----------|---------|-----------|
+|(Intercept)|-1.7259480|0.009928074|-173.8452|  0        |
+|Score      | 0.6181663|0.004818347|128.2943 |  0        |
+"
+cat(tabl)
+```
+<br>
+<br>
+Python Questions: Prediction Accuracy = 0.7923346
 <br>
 <br>
 ```{r table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
@@ -293,6 +258,8 @@ cat(tabl)
 
 <br>
 <br>
+
+
 <br>
 
 
