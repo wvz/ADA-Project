@@ -59,7 +59,7 @@ Our graduation is coming soon. As students in statistics, we know some of us are
 
 <br>
 
-#### 2.How can we increase the probability that we got accepted answer for our question?
+#### 2.How can we increase the probability that we got acceptable answer for our question?
 
 <br>
 
@@ -87,7 +87,7 @@ Each dataset is organized as three tables:
 
 <br>
 
-**1. How did Python and R's popularity develope over the last 8 years on stackover flow?**
+**1. How did Python and R's popularity develop over the last 8 years on stackover flow?**
 <br>
 <br>
 Below is the question's amount change from 2008 to 2016. It shows that Python and R keep growing in a high speed. 
@@ -121,7 +121,7 @@ For R, the mean time is 47.96628 days, median time is 0.032 days, that is over 4
 <br>
 <center><img src="./figs/Team2_pic3.png"  width="800px"" /></center>
 <br>
-**4. Scores you can get as being active on the website?**
+**4. The relationship between answer scores and question scores?**
 <br>
 <br>
 On a Q&A website, if you are an expert in programming languages, there might be some tricks for you to get higher scores.
@@ -146,7 +146,7 @@ It indicates that you can get higher score by answering popular questions. Also,
 <br>
 
 
-## Score & Time Analysis
+## Question Score Prediction
 <br>
 <br>
 **Answer Score EDA**
@@ -181,43 +181,17 @@ cat(tabl)
 Choose the good answer threshold = 3, the 3rd quantile.
 <br>
 <br>
-**Time EDA**
+**Label Questions**
 <br>
 <br>
-Time(hours) = time spent until get a good answer
 Label = 1, questions get good answers, Label = 0, otherwise.
 <br>
 <br>
-R Questions: Total number of questions is 147071. Number of questions with Time=0 is 110. Number of questions never get a good answer is 100636.
+R Questions: Total number of questions is 147071. 46435 of them get acceptable answers while 100636 of questions haven't got an acceptable answer.
 <br>
 <br>
-R Time summary:
-<br>
-```{r table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
-tabl <- "
-| Min. |1st Qu.|Median | Mean  |3rd Qu.| Max   |
-|------|-------|-------|-------|-------|-------|
-| 0.00 | 24.97 |1894.00|1302.00|1894.00|1894.00|
-"
-cat(tabl)
-```
-<br>
-<br>
-Python questions: Total number of questions is 607276. Number of questions with Time=0 is 429. Number of questions never get a good answer is 430177.
-<br>
-<br>
-Python Time summary:
-```{r table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
-tabl <- "
-| Min. |1st Qu.|Median | Mean  |3rd Qu.| Max   |
-|------|-------|-------|-------|-------|-------|
-| 0.0  | 26.6  |2212.0 |1572.0 |2212.0 |2212.0 |
-"
-cat(tabl)
-```
-<br>
-<br>
-<center><img src="./figs/RTime.png"  width="400px"" /><img src="./figs/PTime.png"  width="400px"" /></center>
+
+Python questions: Total number of questions is 607276.177099 of them get acceptable answers while 430177 of questions haven't got an acceptable answer. 
 <br>
 <br>
 **Logistic Regression**
