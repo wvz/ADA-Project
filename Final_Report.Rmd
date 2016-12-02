@@ -87,10 +87,10 @@ Each dataset is organized as three tables:
 
 <br>
 
-**1. How do they change in terms of the popularity degree in past 8 years?**
+**1. How did Python and R's popularity develope over the last 8 years on stackover flow?**
 <br>
 <br>
-Below is the question???s amount change from 2008 to 2016. It shows that Python and R keep growing in a high speed. Under the assumption that Stack Overflow is a relatively mature Q&A website that it???s users number doesn???t change extremely.
+Below is the question's amount change from 2008 to 2016. It shows that Python and R keep growing in a high speed. 
 <br>
 <br>
 <br>
@@ -99,7 +99,7 @@ Below is the question???s amount change from 2008 to 2016. It shows that Python 
 <br>
 <br>
 
-**2. What???s the hottest topics for the two languages respectively?**
+**2. What are the hottest topics for the two languages respectively? **
 <br>
 <br>
 From the word cloud, we can see the focus attentions for R are ggplot2, dataframe and shiny, concentrating on data visualization and report delivery. Also, statistics, regression are common topics for R.
@@ -113,7 +113,7 @@ For Python, django, numpy, pandas, matplotlib attract our attention.
 <br>
 <br>
 
-**3. How long does it take to have an answer posted after asking a question on Stack Overflow? **
+**3. How quickly are the questions answered for these two languages? **
 <br>
 <br>
 For R, the mean time is 47.96628 days, median time is 0.032 days, that is over 45 minutes. While, for Python, the mean time is 70.01714 days, the median is 0.02 days, that is less than half an hour. Since the time distribution is not normal, we use rank sum test and find that the time for R and Python are significantly different.
@@ -121,16 +121,16 @@ For R, the mean time is 47.96628 days, median time is 0.032 days, that is over 4
 <br>
 <center><img src="./figs/Team2_pic3.png"  width="800px"" /></center>
 <br>
-**4. Predict Scores you can get as being active on the website?**
+**4. Scores you can get as being active on the website?**
 <br>
 <br>
 On a Q&A website, if you are an expert in programming languages, there might be some tricks for you to get higher scores.
 
-By exploring the data, we find there???s obvious linear relationship between the question???s score and its corresponding highest answer???s score. Because there are high leverage points and outliers, we use robust linear model to regress answer's score over question's score.
+By exploring the data, we find there's obvious linear relationship between the question's score and its corresponding highest answer's score. Because there are high leverage points and outliers, we use robust linear model to regress answer's score over question's score.
 
-For R, answer???s $score= 1.01 + 0.93* question???s score$
+For R, answer's $score= 1.01 + 0.93* question's\ score$
 
-For Python, answer???s $score= 0.80 + 1.11* question???s score$
+For Python, answer's $score= 0.80 + 1.11* question's\ score$
 
 It indicates that you can get higher score by answering popular questions. Also, get relatively higher score by answering a question about Python, since the coefficient for Python is 1.11, higher than that for R.
 <br>
@@ -220,18 +220,6 @@ cat(tabl)
 <center><img src="./figs/RTime.png"  width="400px"" /><img src="./figs/PTime.png"  width="400px"" /></center>
 <br>
 <br>
-**Gradient Boosting Trees: XGBoost**
-<br>
-<br>
-Score ~ tag_count + max_tag_freq + sum_tag_freq + body_length + title_length + body_word_count + title_word_count + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length
-<br>
-<br>
-$\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ $R Questions: MSE = 8.2; $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ $    Python Questions: MSE = 19.1
-<br>
-<br>
-<center><img src="./figs/R_feature_importance.png"  width="400px"" /><img src="./figs/Python_feature_importance.png"  width="400px"" /></center>
-<br>
-<br>
 **Logistic Regression**
 <br>
 <br>
@@ -267,10 +255,19 @@ cat(tabl)
 
 <br>
 <br>
-
-
+**Gradient Boosting Trees: XGBoost**
 <br>
-
+<br>
+Score ~ tag_count + max_tag_freq + sum_tag_freq + body_length + title_length + body_word_count + title_word_count + code_blocks_count + code_comments_count + url_count + img_count + code_length + comments_length
+<br>
+<br>
+$\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ $R Questions: MSE = 8.2; $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ $    Python Questions: MSE = 19.1
+<br>
+<br>
+<center><img src="./figs/R_feature_importance.png"  width="400px"" /><img src="./figs/Python_feature_importance.png"  width="400px"" /></center>
+<br>
+<br>
+<br>
 
 ## Tag Recommendation System
 
