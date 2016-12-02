@@ -16,15 +16,15 @@ td {  /* Table  */
 }
 h1 { /* Header 1 */
  font-size: 28px;
- color: DarkBlue;
+ color: DarkOrange;
 }
 h2 { /* Header 2 */
  font-size: 25px;
- color: DarkBlue;
+ color: DarkOrange;
 }
 h3 { /* Header 3 */
  font-size: 20px;
- color: DarkBlue;
+ color: DarkOrange;
 }
 code.r{ /* Code block */
   font-size: 10px;
@@ -36,52 +36,60 @@ pre { /* Code block */
 
 <br>
 
-## Background
+<img src="./figs/SO-header.png"  />
 
+## Background 
 <br>
 Our graduation is coming soon. As students in statistics, we know some of us are seeking for a career in data science. However, looking through long description of data scientist position, we found that data scientists seem to be highly rare 'awesome nerds'- those who embody the perfect skillsets of math and stats, **coding**, and communication. We, statstical students, don't need to worry about stats knowledge. However, the shortcoming for most of us, **coding**, is keeping us back at 'nerds'. Our motivation is to help us make most of Stack Overflow, improve coding skills and rush towards 'awesome nerds'.
-
 <br>
+  
+<br>
+  
 <right><img src="./figs/awesome-nerds.png"  width="350px" hspace="30"" /><img src="./figs/stackoverflow.jpg"  width="400px"" /></right>
+  
 <br>
+  
+<br>
+  
+## Objectives
+
 <br>
 
-## Objective
+#### 1.What are the differences between R questions and Python Questions? 
 
-<br>
-
-#### 1.What is the difference between R questions and Python Questions? 
 <br>
 
 #### 2.How can we increase the probability that we got accepted answer for our question?
+
 <br>
 
 #### 3.Would it be possible to recommend paired and regularized tags automatically?
+
 <br>
 
 ## Data Source
 
 <br>
-We explored two datasets from <a href="https://www.kaggle.com/datasets?sortBy=hottest&group=featured&search=questions">Kaggle Dataset</a>. One is for R Q&A and the other is for Python Q&A, which are the top 2 popular programming languages that data scientists use. 
+We explored two datasets provided by Stack Overflow on <a href="https://www.kaggle.com/datasets?sortBy=hottest&group=featured&search=questions">Kaggle Dataset</a>. One is for R Q&A, and the other is for Python Q&A, which are the top 2 popular programming languages that data scientists use. 
 
 Each dataset is organized as three tables:
 
-1.Questions contains the title, body, creation date, score, and owner ID for each question.
+  1. Questions, contains the title, body, creation date, score, and owner ID for each question.
 
-2.Answers contains the body, creation date, score, and owner ID for each of the answers to these questions. The ParentId column links back to the Questions table.
+  2. Answers contains the body, creation date, score, and owner ID for each of the answers to these questions. The ParentId column links back to the Questions table.
 
-3.Tags contains the tags on each question besides the language ('R' or 'Python') tag.
+  3. Tags contains the tags on each question besides the language ('R' or 'Python') tag.
 
 <br>
 
-## Comparison With R & Python
+## Comparison between R & Python Questions
 
 <br>
 
 **1. How do they change in terms of the popularity degree in past 8 years?**
 <br>
 <br>
-Below is the question’s amount change from 2008 to 2016. It shows that Python and R keep growing in a high speed. Under the assumption that Stack Overflow is a relatively mature Q&A website that it’s users number doesn’t change extremely.
+Below is the question???s amount change from 2008 to 2016. It shows that Python and R keep growing in a high speed. Under the assumption that Stack Overflow is a relatively mature Q&A website that it???s users number doesn???t change extremely.
 <br>
 <br>
 <br>
@@ -90,7 +98,7 @@ Below is the question’s amount change from 2008 to 2016. It shows that Python 
 <br>
 <br>
 
-**2. What’s the hottest topics for the two languages respectively?**
+**2. What???s the hottest topics for the two languages respectively?**
 <br>
 <br>
 From the word cloud, we can see the focus attentions for R are ggplot2, dataframe and shiny, concentrating on data visualization and report delivery. Also, statistics, regression are common topics for R.
@@ -117,11 +125,11 @@ For R, the mean time is 47.96628 days, median time is 0.032 days, that is over 4
 <br>
 On a Q&A website, if you are an expert in programming languages, there might be some tricks for you to get higher scores.
 
-By exploring the data, we find there’s obvious linear relationship between the question’s score and its corresponding highest answer’s score. Because there are high leverage points and outliers, we use robust linear model to regress answer's score over question's score.
+By exploring the data, we find there???s obvious linear relationship between the question???s score and its corresponding highest answer???s score. Because there are high leverage points and outliers, we use robust linear model to regress answer's score over question's score.
 
-For R, answer’s $score= 1.01 + 0.93* question’s score$
+For R, answer???s $score= 1.01 + 0.93* question???s score$
 
-For Python, answer’s $score= 0.80 + 1.11* question’s score$
+For Python, answer???s $score= 0.80 + 1.11* question???s score$
 
 It indicates that you can get higher score by answering popular questions. Also, get relatively higher score by answering a question about Python, since the coefficient for Python is 1.11, higher than that for R.
 <br>
